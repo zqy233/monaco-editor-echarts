@@ -7,14 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
-    VxeButton: typeof import('vxe-table')['Button']
-    VxeColumn: typeof import('vxe-table')['Column']
-    VxeGrid: typeof import('vxe-table')['Grid']
-    VxeInput: typeof import('vxe-table')['Input']
-    VxeOption: typeof import('vxe-table')['Option']
-    VxeSelect: typeof import('vxe-table')['Select']
-    VxeTable: typeof import('vxe-table')['Table']
-    VxeToolbar: typeof import('vxe-table')['Toolbar']
+    ElButton: typeof import('element-plus/es')['ElButton']
+    LeftEditor: typeof import('./src/components/leftEditor.vue')['default']
+    RightCharts: typeof import('./src/components/rightCharts.vue')['default']
   }
 }
