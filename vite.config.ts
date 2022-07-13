@@ -7,7 +7,7 @@ import monacoEditorNlsPlugin, { Languages, esbuildPluginMonacoEditorNls } from "
 
 const is_dev = process.env.NODE_ENV === "development"
 export default defineConfig({
-  base: "./",
+  base: "/monaco-editor-echarts/",
   optimizeDeps: {
     esbuildOptions: {
       plugins: [esbuildPluginMonacoEditorNls({ locale: Languages.zh_hans })]
