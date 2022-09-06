@@ -45,14 +45,17 @@ onBeforeMount(() => {
   padding: 0;
   box-sizing: border-box;
 }
+
 .editor {
   display: flex;
   overflow: hidden;
 }
+
 .left {
   width: 50%;
   height: 100vh;
 }
+
 .right {
   width: 50%;
 }

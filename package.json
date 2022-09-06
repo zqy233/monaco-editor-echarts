@@ -9,22 +9,22 @@
   },
   "dependencies": {
     "echarts": "^5.3.3",
-    "monaco-editor": "^0.33.0",
-    "monaco-editor-nls": "^3.0.0",
-    "vue": "^3.2.25",
-    "vxe-table": "^4.2.8",
-    "xe-utils": "^3.5.4"
+    "monaco-editor": "0.34.0",
+    "vue": "^3.2.38",
+    "vxe-table": "^4.3.2",
+    "xe-utils": "^3.5.6"
   },
   "devDependencies": {
-    "@types/node": "^18.0.3",
-    "@vitejs/plugin-vue": "^2.3.3",
+    "@types/node": "^18.7.15",
+    "@vitejs/plugin-vue": "^3.1.0",
     "consola": "^2.15.3",
-    "element-plus": "^2.2.9",
-    "rollup-plugin-monaco-editor-nls": "^1.0.8",
-    "typescript": "^4.5.4",
-    "unplugin-vue-components": "^0.21.1",
-    "vite": "^2.9.9",
+    "element-plus": "^2.2.16",
+    "typescript": "^4.8.2",
+    "unplugin-vue-components": "^0.22.4",
+    "vite": "3.0.4",
+    "vite-plugin-monaco-editor-nls": "^2.0.2",
     "vite-plugin-style-import": "^2.0.0",
-    "vue-tsc": "^0.34.7"
+    "vscode-loc": "git+https://jihulab.com/james-curtis/vscode-loc",
+    "vue-tsc": "^0.40.8"
   }
 }
