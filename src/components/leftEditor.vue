@@ -1,6 +1,7 @@
 <template>
   <el-button type="primary" @click="run">运行</el-button>
   <el-button type="success" @click="copy">复制代码</el-button>
+  <el-button type="danger" @click="formatDocument">格式化</el-button>
   <div ref="editContainer" class="code-editor"></div>
 </template>
 <script setup lang="ts">
@@ -18,6 +19,12 @@ const emits = defineEmits<{
   (e: "run"): void
 }>()
 
+const customCtrlS = () => {
+  console.log("customCtrlS")
+  currenValue.value = monacoEditor.getValue()
+  formatDocument()
+  emits("run")
+}
 /**
  * 编辑器当前代码内容
  */
@@ -71,6 +78,12 @@ const copy = () => {
 //   }
 // )
 
+let monacoEditor: monaco.editor.IStandaloneCodeEditor
+let formatDocument = () => {
+  // monacoEditor.trigger(currenValue.value, "editor.action.formatDocument", "") // 格式化代码
+  monacoEditor.getAction("editor.action.formatDocument").run()
+}
+
 const editContainer = ref<null | HTMLElement>(null)
 onMounted(async () => {
   createModel()
@@ -100,7 +113,7 @@ onMounted(async () => {
       }
     }
   })
-  const monacoEditor = monaco.editor.create(editContainer.value as HTMLElement, {
+  monacoEditor = monaco.editor.create(editContainer.value as HTMLElement, {
     value: props.modelValue,
     readOnly: false, // 只读
     language: "typescript", // 语言
@@ -114,7 +127,15 @@ onMounted(async () => {
     wordWrap: "on", // 自动换行
     showUnused: false // 不显示未使用的变量
   })
+
   currenValue.value = monacoEditor.getValue() // 存储编辑器内容给变量，以供复制
+  document.onkeydown = e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      customCtrlS() //  执行save方法
+      // 阻止默认事件
+      e.preventDefault()
+    }
+  }
   // 编辑器内容发生变化时触发
   monacoEditor.onDidChangeModelContent(() => {
     currenValue.value = monacoEditor?.getValue() // 存储编辑器内容给变量，以供复制
