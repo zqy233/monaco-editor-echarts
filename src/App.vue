@@ -10,7 +10,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, onBeforeMount } from "vue"
-const str = ref(`option = {
+const str = ref(`
+option = {
   xAxis: {
     type: "category",
     data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]

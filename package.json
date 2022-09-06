@@ -8,8 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "echarts": "^5.3.3",
     "monaco-editor": "0.34.0",
+    "monaco-editor-auto-typings": "^0.4.3",
     "vue": "^3.2.38",
     "vxe-table": "^4.3.2",
     "xe-utils": "^3.5.6"

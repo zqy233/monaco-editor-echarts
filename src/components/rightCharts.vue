@@ -22,6 +22,7 @@ onMounted(() => {
 watch(
   () => props.option,
   () => {
+    mychart.clear()
     mychart.setOption(props.option)
   }
 )
