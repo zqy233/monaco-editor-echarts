@@ -3,33 +3,22 @@ import vue from "@vitejs/plugin-vue"
 import Components from "unplugin-vue-components/vite"
 import { createStyleImportPlugin, VxeTableResolve } from "vite-plugin-style-import"
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
-const prefix = `monaco-editor/esm/vs`
 import { resolve } from "path"
 import MonacoEditorNlsPlugin, { esbuildPluginMonacoEditorNls, Languages } from "./plugin"
 const zh_CN = require("vscode-loc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json")
-console.log(zh_CN)
-
 const is_dev = process.env.NODE_ENV === "development"
+
 // /monaco-editor-echarts/
 export default defineConfig({
-  base: is_dev ? "./" : "./",
+  base: is_dev ? "./" : "/monaco-editor-echarts/",
+  build: {
+    outDir: "docs"
+  },
   resolve: {
     alias: {
       "@": resolve("./src")
     }
   },
-  // build: {
-  //   sourcemap: true
-  // },
-  // build: {
-  //   rollupOptions: {
-  //     output: {
-  //       manualChunks: {
-  //         tsWorker: [`${prefix}/language/typescript/ts.worker`]
-  //       }
-  //     }
-  //   }
-  // },
   optimizeDeps: {
     /** vite 版本需要大于等于2.3.0 */
     esbuildOptions: {
@@ -43,6 +32,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    // 汉化
     MonacoEditorNlsPlugin({
       locale: Languages.zh_hans,
       localeData: zh_CN.contents
