@@ -13,7 +13,9 @@ import { EChartsOption } from "echarts"
 import axios from "axios"
 const str = ref("")
 const reqOptionsFile = async () => {
-  str.value = (await axios.get("/echartsOptions/bar1.js")).data
+  console.log()
+
+  str.value = (await axios.get(window.BASE_URL + "echartsOptions/bar1.js")).data
   run()
 }
 const options = ref<EChartsOption>()

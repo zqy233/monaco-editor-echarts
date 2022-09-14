@@ -7,3 +7,10 @@ declare module "*.vue" {
   export default component
 }
 declare module "monaco-editor/esm/vs/editor/editor.main.js"
+
+declare interface Window {
+  /**
+   * 请求路径
+   */
+  BASE_URL: string
+}

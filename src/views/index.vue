@@ -13,9 +13,10 @@ const options = ref<EChartsOption>()
 
 const reqOptionsFile = async () => {
   let option = {}
-  eval((await axios.get("/echartsOptions/bar1.js")).data)
+  console.log(window.BASE_URL + "echartsOptions/bar1.js")
+
+  eval((await axios.get(window.BASE_URL + "echartsOptions/bar1.js")).data)
   options.value = option
-  console.log(option)
 }
 onMounted(() => {
   reqOptionsFile()

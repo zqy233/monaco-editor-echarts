@@ -1,1 +1,1 @@
-window.BASE_URL = "http://localhost:3002"
+window.BASE_URL = "/monaco-editor-echarts/"
