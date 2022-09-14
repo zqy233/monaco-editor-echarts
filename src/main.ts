@@ -54,5 +54,12 @@ function useTable() {
   // app.config.globalProperties.$XSaveFile = VXETable.saveFile
   // app.config.globalProperties.$XReadFile = VXETable.readFile
 }
-
-app.use(useTable).mount("#app")
+import { createRouter, createWebHashHistory } from "vue-router"
+// 这里就是vite-plugin-pages生成的路由信息，正常使用即可
+import routes from "virtual:generated-pages"
+console.log("当前路由", routes)
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes
+})
+app.use(useTable).use(router).mount("#app")

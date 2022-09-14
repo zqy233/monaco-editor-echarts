@@ -5,9 +5,8 @@
   <div ref="editContainer" class="code-editor"></div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
 import * as monaco from "monaco-editor"
-import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker"
+// import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker"
 import TsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
 import axios from "axios"
 
@@ -33,10 +32,10 @@ const currenValue = ref("")
 // 初始化编辑器环境
 self.MonacoEnvironment = {
   getWorker(_: string, label: string) {
-    if (["typescript", "javascript"].includes(label)) {
-      return new TsWorker()
-    }
-    return new EditorWorker()
+    // if (["typescript", "javascript"].includes(label)) {
+    //   return new TsWorker()
+    // }
+    return new TsWorker()
   }
 }
 
@@ -80,39 +79,30 @@ const copy = () => {
 
 let monacoEditor: monaco.editor.IStandaloneCodeEditor
 let formatDocument = () => {
-  // monacoEditor.trigger(currenValue.value, "editor.action.formatDocument", "") // 格式化代码
   monacoEditor.getAction("editor.action.formatDocument").run()
+  // monacoEditor.trigger(currenValue.value, "editor.action.formatDocument", "") // 格式化代码另一种写法
 }
 
 const editContainer = ref<null | HTMLElement>(null)
 onMounted(async () => {
   createModel()
-  // 自定义代码补全
-  const keywords = ["options"]
-  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: true,
-    noSyntaxValidation: false
-  })
-  monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.ES2016,
-    allowNonTsExtensions: true
-  })
-  monaco.languages.registerCompletionItemProvider("typescript", {
-    provideCompletionItems: () => {
-      let suggestions: any[] = []
-      keywords.forEach(item => {
-        suggestions.push({
-          detail: "任何文字提示", // 代码补全右侧文本提示
-          label: item, // 代码补全左侧文本
-          insertText: item, // 插入编辑器中的补全代码
-          kind: monaco.languages.CompletionItemKind.Function // 代码补全最左侧显示的图标
-        })
-      })
-      return {
-        suggestions: suggestions
-      }
+  createEditor()
+})
+
+watch(
+  () => props.modelValue,
+  () => {
+    if (monacoEditor) {
+      monacoEditor.dispose()
     }
-  })
+    createEditor()
+  }
+)
+
+/**
+ * 创建一个编辑器
+ */
+const createEditor = () => {
   monacoEditor = monaco.editor.create(editContainer.value as HTMLElement, {
     value: props.modelValue,
     readOnly: false, // 只读
@@ -141,11 +131,37 @@ onMounted(async () => {
     currenValue.value = monacoEditor?.getValue() // 存储编辑器内容给变量，以供复制
     emits("update:modelValue", currenValue.value) // 传递父组件v-model值
   })
-})
+}
+
+// 自定义代码补全
+// const keywords = ["options"]
+// monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+//   noSemanticValidation: true,
+//   noSyntaxValidation: false
+// })
+// monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+//   target: monaco.languages.typescript.ScriptTarget.ES2016,
+//   allowNonTsExtensions: true
+// })
+// monaco.languages.registerCompletionItemProvider("typescript", {
+//   provideCompletionItems: () => {
+//     let suggestions: any[] = []
+//     keywords.forEach(item => {
+//       suggestions.push({
+//         detail: "任何文字提示", // 代码补全右侧文本提示
+//         label: item, // 代码补全左侧文本
+//         insertText: item, // 插入编辑器中的补全代码
+//         kind: monaco.languages.CompletionItemKind.Function // 代码补全最左侧显示的图标
+//       })
+//     })
+//     return {
+//       suggestions: suggestions
+//     }
+//   }
+// })
 </script>
 <style>
 .code-editor {
   height: 100%;
-  /* border: 1px solid skyblue; */
 }
 </style>

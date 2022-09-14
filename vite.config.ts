@@ -6,49 +6,68 @@ import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 import { resolve } from "path"
 import MonacoEditorNlsPlugin, { esbuildPluginMonacoEditorNls, Languages } from "./plugin"
 const zh_CN = require("vscode-loc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json")
-const is_dev = process.env.NODE_ENV === "development"
+import Pages from "vite-plugin-pages"
+import AutoImport from "unplugin-auto-import/vite"
 
-// /monaco-editor-echarts/
-export default defineConfig({
-  base: is_dev ? "./" : "/monaco-editor-echarts/",
-  build: {
-    outDir: "docs"
-  },
-  resolve: {
-    alias: {
-      "@": resolve("./src")
-    }
-  },
-  optimizeDeps: {
-    /** vite 版本需要大于等于2.3.0 */
-    esbuildOptions: {
-      plugins: [
-        esbuildPluginMonacoEditorNls({
-          locale: Languages.zh_hans,
-          localeData: zh_CN.contents
-        })
-      ]
-    }
-  },
-  plugins: [
-    vue(),
-    // 汉化
-    MonacoEditorNlsPlugin({
-      locale: Languages.zh_hans,
-      localeData: zh_CN.contents
-    }),
-    Components({
-      // 配置vxe-table的自动注册组件
-      resolvers: [
-        ElementPlusResolver(),
-        componentName => {
-          if (componentName.startsWith("Vxe")) return { name: componentName.slice(3), from: "vxe-table" }
-        }
-      ]
-    }),
-    // 配置vxe-table的自动导入组件样式
-    createStyleImportPlugin({
-      resolves: [VxeTableResolve()]
-    })
-  ]
-})
+export default ({ mode }) => {
+  return defineConfig({
+    base: mode === "development" ? "./" : "/monaco-editor-echarts/",
+    build: {
+      outDir: "docs"
+    },
+    resolve: {
+      alias: {
+        "@": resolve("./src")
+      }
+    },
+    optimizeDeps: {
+      /** vite 版本需要大于等于2.3.0 */
+      esbuildOptions: {
+        plugins: [
+          esbuildPluginMonacoEditorNls({
+            locale: Languages.zh_hans,
+            localeData: zh_CN.contents
+          })
+        ]
+      }
+    },
+    plugins: [
+      vue(),
+      AutoImport({
+        imports: ["vue", "vue-router", "vuex"], // 自动导入composition api
+        dts: "src/auto-import.d.ts" // 生成 `auto-import.d.ts` 全局声明
+      }),
+      Pages({
+        // 自动读取src/views下的vue文件，生成路由信息，默认路由路径'/‘
+        dirs: [{ dir: "src/views", baseRoute: "/" }],
+        // 异步方式加载路由组件
+        importMode: "async"
+        // 遍历路由信息，给默认路由加一个redirect
+        // extendRoute(route) {
+        //   if (route.path === "/") return { ...route, redirect: "login" }
+        // }
+      }),
+      // 汉化
+      MonacoEditorNlsPlugin({
+        locale: Languages.zh_hans,
+        localeData: zh_CN.contents
+      }),
+      Components({
+        dirs: ["src/components"], // 要导入组件的目录路径
+        deep: true, // 搜索子目录
+        dts: "src/components/components.d.ts", // 生成 `components.d.ts` 全局声明
+        // 配置vxe-table的自动注册组件
+        resolvers: [
+          ElementPlusResolver(),
+          componentName => {
+            if (componentName.startsWith("Vxe")) return { name: componentName.slice(3), from: "vxe-table" }
+          }
+        ]
+      }),
+      // 配置vxe-table的自动导入组件样式
+      createStyleImportPlugin({
+        resolves: [VxeTableResolve()]
+      })
+    ]
+  })
+}

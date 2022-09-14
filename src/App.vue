@@ -1,62 +1,21 @@
 <template>
-  <div class="editor">
-    <div class="left">
-      <leftEditor v-model="str" @run="run"></leftEditor>
-    </div>
-    <div class="right">
-      <rightCharts :option="options"></rightCharts>
-    </div>
-  </div>
+  <!-- 指定home组件和about组件被缓存 -->
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
-<script lang="ts" setup>
-import { ref, onBeforeMount } from "vue"
-const str = ref(`option = {
-  xAxis: {
-    type: "category",
-    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-  },
-  yAxis: {
-    type: "value"
-  },
-  series: [
-    {
-      data: [120, 200, 150, 80, 70, 110, 130],
-      type: "bar",
-      showBackground: true,
-      backgroundStyle: {
-        color: "rgba(180, 180, 180, 0.2)"
-      }
-    }
-  ]
-}`)
-const options = ref()
-const run = () => {
-  let option = ""
-  eval(str.value)
-  options.value = option
-}
-onBeforeMount(() => {
-  run()
-})
-</script>
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
-.editor {
-  display: flex;
-  overflow: hidden;
-}
-
-.left {
-  width: 50%;
-  height: 100vh;
-}
-
-.right {
-  width: 50%;
+html,
+body,
+#app {
+  height: 100%;
+  background-color: #f2f3f9;
 }
 </style>
