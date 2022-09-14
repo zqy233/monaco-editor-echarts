@@ -1,1 +1,1 @@
-window.BASE_URL = "/"
+window.BASE_URL = "/monaco-editor-echarts/"
