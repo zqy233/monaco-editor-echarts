@@ -8,6 +8,7 @@ import MonacoEditorNlsPlugin, { esbuildPluginMonacoEditorNls, Languages } from "
 const zh_CN = require("vscode-loc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json")
 import Pages from "vite-plugin-pages"
 import AutoImport from "unplugin-auto-import/vite"
+import { createHtmlPlugin } from "vite-plugin-html"
 
 export default ({ mode }) => {
   return defineConfig({
@@ -33,6 +34,20 @@ export default ({ mode }) => {
     },
     plugins: [
       vue(),
+      createHtmlPlugin({
+        minify: false,
+        // 入口，不需要在`index.html`内添加 script 标签，原有标签需要删除
+        entry: "src/main.ts",
+        // 将 `index.html`存放在指定文件夹
+        template: "index.html",
+        // 需要注入 index.html ejs 模版的数据
+        inject: {
+          data: {
+            title: "echarts示例",
+            injectScript: mode === "development" ? `<script src="./dev.js"></script>` : `<script src="./config.js"></script>`
+          }
+        }
+      }),
       AutoImport({
         imports: ["vue", "vue-router", "vuex"], // 自动导入composition api
         dts: "src/auto-import.d.ts" // 生成 `auto-import.d.ts` 全局声明

@@ -11,11 +11,11 @@
 <script lang="ts" setup>
 import { EChartsOption } from "echarts"
 import axios from "axios"
+const route = useRoute()
 const str = ref("")
 const reqOptionsFile = async () => {
   console.log()
-
-  str.value = (await axios.get(window.BASE_URL + "echartsOptions/bar1.js")).data
+  str.value = (await axios.get(window.BASE_URL + "echartsOptions/" + route.query.file)).data
   run()
 }
 const options = ref<EChartsOption>()
@@ -25,6 +25,10 @@ const run = () => {
   options.value = option
 }
 onMounted(() => {
+  reqOptionsFile()
+})
+
+onActivated(() => {
   reqOptionsFile()
 })
 </script>

@@ -1,7 +1,7 @@
 <template>
   <section class="echarts-demo-list">
-    <div class="echarts-demo" v-for="(item, index) in 5" :key="index">
-      <chartPreviewImg :option="options" @click="routerPush"></chartPreviewImg>
+    <div class="echarts-demo" v-for="(item, index) in reqDataArr" :key="index">
+      <chartPreviewImg :option="item.option" @click="routerPush(item.file)"></chartPreviewImg>
     </div>
   </section>
 </template>
@@ -9,26 +9,37 @@
 import { EChartsOption } from "echarts"
 import axios from "axios"
 const router = useRouter()
-const options = ref<EChartsOption>()
-
+interface reqDataArrType {
+  option: EChartsOption
+  file: string
+}
+const reqDataArr = ref<reqDataArrType[]>()
 const reqOptionsFile = async () => {
-  let option = {}
-  console.log(window.BASE_URL + "echartsOptions/bar1.js")
-
-  eval((await axios.get(window.BASE_URL + "echartsOptions/bar1.js")).data)
-  options.value = option
+  let reqPromiseAllArr = await Promise.all([req("bar1.js"), req("pie1.js"), req("pie2.js")].map(p => p.catch(e => e)))
+  reqDataArr.value = reqPromiseAllArr.map(item => {
+    let option: EChartsOption = {}
+    console.log()
+    eval(item.data)
+    return {
+      option,
+      file: item.request.responseURL.split("/")[item.request.responseURL.split("/").length - 1]
+    }
+  })
 }
 onMounted(() => {
   reqOptionsFile()
 })
-const routerPush = () => {
-  router.push("/echarts-code")
+const req = (js: string) => {
+  return axios.get(window.BASE_URL + "echartsOptions/" + js)
+}
+const routerPush = (file: string) => {
+  router.push({ path: "/echarts-code", query: { file } })
 }
 </script>
 <style>
 .echarts-demo-list {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   flex-wrap: wrap;
 }
 .echarts-demo {
@@ -36,19 +47,22 @@ const routerPush = () => {
   background-color: #fff;
   margin: 10px;
   width: calc(25vw - 20px);
-  height: 15vw;
+  height: calc(25vw - 20px);
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 }
 @media (max-width: 992px) {
   .echarts-demo {
     width: calc(33vw - 20px);
-    height: 23vw;
+    height: calc(33vw - 20px);
   }
 }
 @media (max-width: 760px) {
+  .echarts-demo-list {
+    justify-content: center;
+  }
   .echarts-demo {
-    width: calc(100vw - 20px);
-    height: 70vw;
+    width: calc(90vw - 20px);
+    height: calc(90vw - 20px);
   }
 }
 </style>

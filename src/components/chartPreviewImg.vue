@@ -14,7 +14,6 @@
 <script setup lang="ts">
 import { init, EChartsOption, EChartsType } from "echarts"
 // import html2canvas from "html2canvas"
-const route = useRoute()
 const chart = ref<null | HTMLElement>(null)
 const img = ref("")
 const props = withDefaults(
@@ -26,7 +25,9 @@ const props = withDefaults(
 let mychart: EChartsType
 const loading = ref(true)
 
-onMounted(() => {})
+onMounted(() => {
+  // createChart()
+})
 const createChart = () => {
   if (!props.option) return
 
@@ -37,8 +38,9 @@ const createChart = () => {
     mychart.on("finished", () => {
       // 值得注意的是，resize、鼠标悬浮等事件都会触发finished事件
       // 所以需要判断，使图片仅生成一次，且当前页面不能是查看源代码页面
+      console.log(props.option, "option加载结束")
+
       if (!img.value) {
-        console.log("option加载结束")
         img.value = mychart.getConnectedDataURL({ type: "png" })
         nextTick(() => {
           loading.value = false
@@ -61,8 +63,12 @@ const createChart = () => {
 watch(
   () => props.option,
   () => {
-    createChart()
-  }
+    console.log(11, props.option)
+    nextTick(() => {
+      createChart()
+    })
+  },
+  { immediate: true }
 )
 </script>
 <style>
@@ -78,6 +84,7 @@ watch(
 .previewImg {
   width: 100%;
   height: 100%;
+  object-fit: fill;
   transition: all 0.3s;
 }
 .previewImg:hover {
