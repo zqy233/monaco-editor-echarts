@@ -46,9 +46,15 @@ const routerPush = (file: string) => {
   padding: 10px;
   background-color: #fff;
   margin: 10px;
-  width: calc(25vw - 20px);
-  height: calc(25vw - 20px);
+  width: calc(20vw - 20px);
+  height: calc(20vw - 20px);
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+@media (max-width: 1200px) {
+  .echarts-demo {
+    width: calc(25vw - 20px);
+    height: calc(25vw - 20px);
+  }
 }
 @media (max-width: 992px) {
   .echarts-demo {

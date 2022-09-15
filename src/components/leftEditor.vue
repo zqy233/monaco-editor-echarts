@@ -1,7 +1,10 @@
 <template>
-  <el-button type="primary" @click="run">运行</el-button>
-  <el-button type="success" @click="copy">复制代码</el-button>
-  <el-button type="danger" @click="formatDocument">格式化</el-button>
+  <div class="btns">
+    <el-button plain type="primary" @click="run">运行</el-button>
+    <el-button plain type="success" @click="copy">复制代码</el-button>
+    <el-button plain type="danger" @click="formatDocument">格式化</el-button>
+    <el-button plain @click="() => router.go(-1)">返回</el-button>
+  </div>
   <div ref="editContainer" class="code-editor"></div>
 </template>
 <script setup lang="ts">
@@ -9,7 +12,7 @@ import * as monaco from "monaco-editor"
 // import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker"
 import TsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
 import axios from "axios"
-
+const router = useRouter()
 const props = defineProps<{
   modelValue: string
 }>()
@@ -18,8 +21,10 @@ const emits = defineEmits<{
   (e: "run"): void
 }>()
 
+/**
+ * 自定义ctrl+s命令
+ */
 const customCtrlS = () => {
-  console.log("customCtrlS")
   currenValue.value = monacoEditor.getValue()
   formatDocument()
   emits("run")
@@ -43,7 +48,7 @@ self.MonacoEnvironment = {
  * 提供echarts的类型提示
  *
  */
-const createModel = async () => {
+const addTSLanguagesSupport = async () => {
   const fact = (await axios.get("index.d.ts")).data
   monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, "")
 }
@@ -67,6 +72,7 @@ const copy = () => {
   document.execCommand("Copy") // 执行浏览器复制功能(关键一步)
   document.body.removeChild(input) // 完成复制后删除节点
 }
+
 // watch(
 //   () => props.value,
 //   value => {
@@ -78,29 +84,37 @@ const copy = () => {
 // )
 
 let monacoEditor: monaco.editor.IStandaloneCodeEditor
+
+/**
+ * 格式化文档
+ */
 let formatDocument = () => {
   monacoEditor.getAction("editor.action.formatDocument").run()
   // monacoEditor.trigger(currenValue.value, "editor.action.formatDocument", "") // 格式化代码另一种写法
 }
 
 const editContainer = ref<null | HTMLElement>(null)
-onMounted(async () => {
-  createModel()
-  createEditor()
-})
 
+/**
+ * 监听v-model变化，更新编辑器内容
+ */
 watch(
   () => props.modelValue,
-  () => {
+  value => {
     if (monacoEditor) {
-      monacoEditor.dispose()
+      // 防止改变编辑器内容时光标重定向
+      if (value !== monacoEditor.getValue()) {
+        monacoEditor.setValue(props.modelValue)
+      }
+    } else {
+      addTSLanguagesSupport()
+      createEditor()
     }
-    createEditor()
   }
 )
 
 /**
- * 创建一个编辑器
+ * 创建编辑器
  */
 const createEditor = () => {
   monacoEditor = monaco.editor.create(editContainer.value as HTMLElement, {
@@ -126,6 +140,7 @@ const createEditor = () => {
       e.preventDefault()
     }
   }
+
   // 编辑器内容发生变化时触发
   monacoEditor.onDidChangeModelContent(() => {
     currenValue.value = monacoEditor?.getValue() // 存储编辑器内容给变量，以供复制
@@ -161,6 +176,9 @@ const createEditor = () => {
 // })
 </script>
 <style>
+.btns {
+  margin: 10px;
+}
 .code-editor {
   height: 100%;
 }

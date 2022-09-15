@@ -14,3 +14,6 @@ declare interface Window {
    */
   BASE_URL: string
 }
+declare module "vm-browserify" {
+  const runInNewContext: (code: string) => EChartsOption
+}

@@ -11,6 +11,7 @@
 <script lang="ts" setup>
 import { EChartsOption } from "echarts"
 import axios from "axios"
+import vm from "vm-browserify"
 const route = useRoute()
 const str = ref("")
 const reqOptionsFile = async () => {
@@ -20,9 +21,8 @@ const reqOptionsFile = async () => {
 }
 const options = ref<EChartsOption>()
 const run = () => {
-  let option = {}
-  eval(str.value)
-  options.value = option
+  // const res = vm.runInNewContext(str.value)
+  options.value = vm.runInNewContext(str.value)
 }
 onMounted(() => {
   reqOptionsFile()
