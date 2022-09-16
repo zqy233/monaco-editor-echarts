@@ -25,9 +25,6 @@ const props = withDefaults(
 let mychart: EChartsType
 const loading = ref(true)
 
-onMounted(() => {
-  // createChart()
-})
 const createChart = () => {
   if (!props.option) return
 
@@ -38,8 +35,6 @@ const createChart = () => {
     mychart.on("finished", () => {
       // 值得注意的是，resize、鼠标悬浮等事件都会触发finished事件
       // 所以需要判断，使图片仅生成一次，且当前页面不能是查看源代码页面
-      console.log(props.option, "option加载结束")
-
       if (!img.value) {
         img.value = mychart.getConnectedDataURL({ type: "png" })
         nextTick(() => {
@@ -63,7 +58,6 @@ const createChart = () => {
 watch(
   () => props.option,
   () => {
-    console.log(11, props.option)
     nextTick(() => {
       createChart()
     })
@@ -89,7 +83,7 @@ watch(
 }
 .previewImg:hover {
   cursor: pointer;
-  transform: scale(1.2);
+  transform: scale(1.3);
 }
 .w100h100 {
   width: 100%;

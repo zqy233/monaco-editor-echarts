@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     ElButton: typeof import('element-plus/es')['ElButton']
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSkeletonItem: typeof import('element-plus/es')['ElSkeletonItem']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     LeftEditor: typeof import('./leftEditor.vue')['default']
     RightChart: typeof import('./rightChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

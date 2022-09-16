@@ -4,6 +4,7 @@
     <el-button plain type="success" @click="copy">复制代码</el-button>
     <el-button plain type="danger" @click="formatDocument">格式化</el-button>
     <el-button plain @click="() => router.go(-1)">返回</el-button>
+    <el-button plain @click="a">设置只读</el-button>
   </div>
   <div ref="editContainer" class="code-editor"></div>
 </template>
@@ -84,7 +85,9 @@ const copy = () => {
 // )
 
 let monacoEditor: monaco.editor.IStandaloneCodeEditor
-
+const a = () => {
+  monacoEditor.updateOptions({ readOnly: true, theme: "vs-dark" })
+}
 /**
  * 格式化文档
  */
@@ -121,7 +124,7 @@ const createEditor = () => {
     value: props.modelValue,
     readOnly: false, // 只读
     language: "typescript", // 语言
-    theme: "", // 主题，黑暗主题为vs-dark
+    theme: "vs", // 主题，黑暗主题为vs-dark
     selectOnLineNumbers: true, // 选中行数
     automaticLayout: true, // 自动调整布局
     fontSize: 12, //字体大小
@@ -133,11 +136,12 @@ const createEditor = () => {
   })
 
   currenValue.value = monacoEditor.getValue() // 存储编辑器内容给变量，以供复制
+
+  // 监听ctrl+s组合按键
   document.onkeydown = e => {
     if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-      customCtrlS() //  执行save方法
-      // 阻止默认事件
-      e.preventDefault()
+      customCtrlS()
+      e.preventDefault() // 阻止默认事件
     }
   }
 

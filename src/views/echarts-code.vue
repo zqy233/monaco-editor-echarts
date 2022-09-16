@@ -15,13 +15,14 @@ import vm from "vm-browserify"
 const route = useRoute()
 const str = ref("")
 const reqOptionsFile = async () => {
-  console.log()
-  str.value = (await axios.get(window.BASE_URL + "echartsOptions/" + route.query.file)).data
+  const { data: gist } = await axios.get(`https://api.github.com/gists/${route.query.id}`)
+  // 我设计了一个获取gist内容的规则，description信息包含文件中文和文件名，用"-"分割
+  const gistDescription = gist.description.split("-")
+  str.value = gist.files[gistDescription[1]].content
   run()
 }
 const options = ref<EChartsOption>()
 const run = () => {
-  // const res = vm.runInNewContext(str.value)
   options.value = vm.runInNewContext(str.value)
 }
 onMounted(() => {
@@ -32,13 +33,7 @@ onActivated(() => {
   reqOptionsFile()
 })
 </script>
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+<style lang="scss" scoped>
 .editor {
   display: flex;
   overflow: hidden;
