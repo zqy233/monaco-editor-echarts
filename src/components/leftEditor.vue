@@ -4,7 +4,7 @@
     <el-button plain type="success" @click="copy">复制代码</el-button>
     <el-button plain type="danger" @click="formatDocument">格式化</el-button>
     <el-button plain @click="() => router.go(-1)">返回</el-button>
-    <el-button plain @click="a">设置只读</el-button>
+    <!-- <el-button plain @click="a">设置只读</el-button> -->
   </div>
   <div ref="editContainer" class="code-editor"></div>
 </template>
@@ -182,8 +182,11 @@ const createEditor = () => {
 <style>
 .btns {
   margin: 10px;
+  display: flex;
+  height: 40px;
+  justify-content: center;
 }
 .code-editor {
-  height: 100%;
+  height: calc(100% - 40px);
 }
 </style>

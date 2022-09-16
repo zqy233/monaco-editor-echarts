@@ -36,10 +36,11 @@ onActivated(() => {
 <style lang="scss" scoped>
 .editor {
   display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   overflow: hidden;
   background-color: #fff;
 }
-
 .left {
   width: 50%;
   height: 100vh;
@@ -48,5 +49,28 @@ onActivated(() => {
 .right {
   width: 50%;
   height: 100vh;
+}
+
+@media (max-width: 1200px) {
+  .left {
+    /* height: auto; */
+  }
+}
+@media (max-width: 992px) {
+  .echarts-demo {
+    width: calc(33vw - 20px);
+    height: calc(33vw - 20px);
+  }
+}
+@media (max-width: 760px) {
+  .left {
+    width: calc(90vw - 20px);
+    height: calc(50vh);
+  }
+  .right {
+    margin-top: 30px;
+    width: calc(100vw);
+    height: calc(50vh);
+  }
 }
 </style>
