@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ChartPreviewImg: typeof import('./chartPreviewImg.vue')['default']
-    EchartsCode: typeof import('./echarts-code.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDrawer: typeof import('element-plus/es')['ElDrawer']
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']

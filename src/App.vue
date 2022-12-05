@@ -6,7 +6,7 @@
   </router-view>
 </template>
 
-<script>
+<script lang="ts">
 // 自定义name的壳的集合
 const wrapperMap = new Map()
 export default {
@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     // 为keep-alive里的component接收的组件包上一层自定义name的壳
-    wrap(fullPath, component) {
+    wrap(fullPath: string, component: string) {
       let wrapper
       // 重点就是这里，这个组件的名字是完全可控的，
       // 只要自己写好逻辑，每次能找到对应的外壳组件就行，完全可以写成任何自己想要的名字

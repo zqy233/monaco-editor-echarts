@@ -1,7 +1,8 @@
 <template>
   <el-button @click="showDrawer">打开遮罩</el-button>
   <el-button @click="github">github登录</el-button>
-  <el-button @click="github">获取token</el-button>
+  <el-button @click="getToken">获取token</el-button>
+  <el-button @click="reqOptionsFile">获取gitst</el-button>
   <section class="echarts-demo-list">
     <div v-for="(item, index) in reqDataArr" :key="index" class="echarts-demo">
       <el-tooltip class="box-item" effect="dark" :content="item.name">
@@ -41,6 +42,9 @@
 <script lang="ts" setup>
 import axios from "axios"
 import vm from "vm-browserify"
+import qs from "qs"
+let code = ""
+let token = ""
 const router = useRouter()
 interface reqDataArrType {
   name: string
@@ -50,10 +54,20 @@ interface reqDataArrType {
 const reqDataArr = ref<reqDataArrType[]>([])
 
 const reqOptionsFile = async () => {
-  const { data: gisList } = await axios.get("https://api.github.com/users/zqy233/gists")
+  console.log(111, token)
+
+  const { data: gisList } = await axios({
+    method: "get",
+    url: "https://api.github.com/users/zqy233/gists",
+    headers: { Authorization: "Bearer " + token },
+  })
   const gisListIds = gisList.map((item: any) => item.id)
   gisListIds.forEach(async (id: string) => {
-    const { data: gist } = await axios.get(`https://api.github.com/gists/${id}`)
+    const { data: gist } = await axios({
+      method: "get",
+      url: `https://api.github.com/gists/${id}`,
+      headers: { Authorization: "Bearer " + token },
+    })
     // 我设计了一个获取gist内容的规则，description信息包含文件中文和文件名，用"-"分割
     const gistDescription = gist.description.split("-")
     reqDataArr.value.push({
@@ -65,9 +79,8 @@ const reqOptionsFile = async () => {
 }
 
 onMounted(() => {
-  reqOptionsFile()
+  // reqOptionsFile()
 })
-
 const drawer = ref(false)
 const showDrawer = () => {
   drawer.value = true
@@ -92,10 +105,22 @@ const setEchartsTheme = (theme?: echartThemeEnum) => {
 
 const github = () => {
   location.href = "https://github.com/login/oauth/authorize?client_id=07b3c567d304a6aa1b92"
+  console.log(window.location)
 }
 
 const getToken = async () => {
-  await axios.get(" https://github.com/login/oauth/access_token", {})
+  code = qs.parse(window.location.search)["?code"] as string
+  const { data: res } = await axios.post(
+    "/login/oauth/access_token",
+    {
+      client_id: "07b3c567d304a6aa1b92",
+      client_secret: "edad2b4773120369d20226976f0dcc20f3587328",
+      code,
+    },
+    { headers: { Accept: "application/json" } }
+  )
+  console.log(res)
+  // token = res.access_token
 }
 </script>
 <style lang="scss">

@@ -44,7 +44,10 @@ export default ({ mode }) => {
         inject: {
           data: {
             title: "echarts示例",
-            injectScript: mode === "development" ? `<script src="./dev.js"></script>` : `<script src="./config.js"></script>`,
+            injectScript:
+              mode === "development"
+                ? `<script src="./dev.js"></script>`
+                : `<script src="./config.js"></script>`,
           },
         },
       }),
@@ -75,7 +78,8 @@ export default ({ mode }) => {
         resolvers: [
           ElementPlusResolver(),
           componentName => {
-            if (componentName.startsWith("Vxe")) return { name: componentName.slice(3), from: "vxe-table" }
+            if (componentName.startsWith("Vxe"))
+              return { name: componentName.slice(3), from: "vxe-table" }
           },
         ],
       }),
@@ -87,13 +91,7 @@ export default ({ mode }) => {
     server: {
       // 设置代理
       proxy: {
-        // "/tzMessageManage": "http://192.168.4.203:8112",
-        // "/tzMessageManage": "http://192.168.1.236:10007",
-        "/tzMessageManage": "http://192.168.4.203:8111",
-        // "/tzMessageManage": "http://192.168.4.203:8111",
-        // "/tzMessageManage": "http://192.168.4.203:8111",
-        "/tzrb": "http://192.168.4.203:8112",
-        // "/tzrb": "http://192.168.1.236:10007",
+        "/login": "https://github.com",
       },
       port: 9005, // 端口号
       open: true, // 是否自动打开浏览器
