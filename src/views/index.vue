@@ -111,7 +111,7 @@ const github = () => {
 const getToken = async () => {
   code = qs.parse(window.location.search)["?code"] as string
   const { data: res } = await axios.post(
-    "/login/oauth/access_token",
+    "https://github.com/login/oauth/access_token",
     {
       client_id: "07b3c567d304a6aa1b92",
       client_secret: "edad2b4773120369d20226976f0dcc20f3587328",
