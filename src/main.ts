@@ -7,8 +7,9 @@ import {
   Edit,
   // 表格功能
   Validator,
-  Table
+  Table,
 } from "vxe-table"
+
 const app = createApp(App)
 function useTable() {
   // 表格功能
@@ -60,6 +61,9 @@ import routes from "virtual:generated-pages"
 console.log("当前路由", routes)
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 })
-app.use(useTable).use(router).mount("#app")
+
+import { createPinia } from "pinia"
+
+app.use(useTable).use(createPinia()).use(router).mount("#app")

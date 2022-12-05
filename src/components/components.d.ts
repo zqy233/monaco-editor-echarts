@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     ChartPreviewImg: typeof import('./chartPreviewImg.vue')['default']
     EchartsCode: typeof import('./echarts-code.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElDrawer: typeof import('element-plus/es')['ElDrawer']
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSkeletonItem: typeof import('element-plus/es')['ElSkeletonItem']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']

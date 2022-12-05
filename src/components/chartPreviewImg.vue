@@ -34,7 +34,7 @@ const createChart = () => {
     // 等待echarts渲染完生成图片，用于预览
     mychart.on("finished", () => {
       // 值得注意的是，resize、鼠标悬浮等事件都会触发finished事件
-      // 所以需要判断，使图片仅生成一次，且当前页面不能是查看源代码页面
+      // 所以需要判断，使图片仅生成一次
       if (!img.value) {
         img.value = mychart.getConnectedDataURL({ type: "png" })
         nextTick(() => {

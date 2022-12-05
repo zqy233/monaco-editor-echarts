@@ -11,7 +11,7 @@ const props = withDefaults(
     option: EChartsOption | undefined
   }>(),
   {
-    option: undefined
+    option: undefined,
   }
 )
 let mychart: EChartsType

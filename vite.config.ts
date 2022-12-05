@@ -14,12 +14,12 @@ export default ({ mode }) => {
   return defineConfig({
     base: mode === "development" ? "./" : "/monaco-editor-echarts/",
     build: {
-      outDir: "docs"
+      outDir: "docs",
     },
     resolve: {
       alias: {
-        "@": resolve("./src")
-      }
+        "@": resolve("./src"),
+      },
     },
     optimizeDeps: {
       /** vite 版本需要大于等于2.3.0 */
@@ -27,10 +27,10 @@ export default ({ mode }) => {
         plugins: [
           esbuildPluginMonacoEditorNls({
             locale: Languages.zh_hans,
-            localeData: zh_CN.contents
-          })
-        ]
-      }
+            localeData: zh_CN.contents,
+          }),
+        ],
+      },
     },
     plugins: [
       vue(),
@@ -44,19 +44,19 @@ export default ({ mode }) => {
         inject: {
           data: {
             title: "echarts示例",
-            injectScript: mode === "development" ? `<script src="./dev.js"></script>` : `<script src="./config.js"></script>`
-          }
-        }
+            injectScript: mode === "development" ? `<script src="./dev.js"></script>` : `<script src="./config.js"></script>`,
+          },
+        },
       }),
       AutoImport({
         imports: ["vue", "vue-router", "vuex"], // 自动导入composition api
-        dts: "src/auto-import.d.ts" // 生成 `auto-import.d.ts` 全局声明
+        dts: "src/auto-import.d.ts", // 生成 `auto-import.d.ts` 全局声明
       }),
       Pages({
         // 自动读取src/views下的vue文件，生成路由信息，默认路由路径'/‘
         dirs: [{ dir: "src/views", baseRoute: "/" }],
         // 异步方式加载路由组件
-        importMode: "async"
+        importMode: "async",
         // 遍历路由信息，给默认路由加一个redirect
         // extendRoute(route) {
         //   if (route.path === "/") return { ...route, redirect: "login" }
@@ -65,7 +65,7 @@ export default ({ mode }) => {
       // 汉化
       MonacoEditorNlsPlugin({
         locale: Languages.zh_hans,
-        localeData: zh_CN.contents
+        localeData: zh_CN.contents,
       }),
       Components({
         dirs: ["src/components"], // 要导入组件的目录路径
@@ -76,13 +76,27 @@ export default ({ mode }) => {
           ElementPlusResolver(),
           componentName => {
             if (componentName.startsWith("Vxe")) return { name: componentName.slice(3), from: "vxe-table" }
-          }
-        ]
+          },
+        ],
       }),
       // 配置vxe-table的自动导入组件样式
       createStyleImportPlugin({
-        resolves: [VxeTableResolve()]
-      })
-    ]
+        resolves: [VxeTableResolve()],
+      }),
+    ],
+    server: {
+      // 设置代理
+      proxy: {
+        // "/tzMessageManage": "http://192.168.4.203:8112",
+        // "/tzMessageManage": "http://192.168.1.236:10007",
+        "/tzMessageManage": "http://192.168.4.203:8111",
+        // "/tzMessageManage": "http://192.168.4.203:8111",
+        // "/tzMessageManage": "http://192.168.4.203:8111",
+        "/tzrb": "http://192.168.4.203:8112",
+        // "/tzrb": "http://192.168.1.236:10007",
+      },
+      port: 9005, // 端口号
+      open: true, // 是否自动打开浏览器
+    },
   })
 }
