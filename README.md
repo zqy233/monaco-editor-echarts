@@ -1,4 +1,4 @@
-## 这个网站用于存放echarts option，欢迎fork与加入开发
+## ✨这个网站用于存放echarts option，欢迎fork与加入开发
 
 因为工作中开发过很多echarts图表，这些图表的option配置不记起来很容易下次就忘了
 
