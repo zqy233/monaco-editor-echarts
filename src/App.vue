@@ -43,7 +43,7 @@ export default {
           wrapper = {
             name: wrapperName,
             render() {
-              return h("div", { className: "vaf-page-wrapper" }, component)
+              return h('div', { className: 'vaf-page-wrapper' }, component)
             },
           }
           wrapperMap.set(wrapperName, wrapper)
@@ -72,7 +72,7 @@ body,
 /*滚动条整体部分,必须要设置*/
 ::-webkit-scrollbar {
   width: 10px;
-  heigth: 10px;
+  height: 10px;
   background-color: #f2f3f9;
 }
 
