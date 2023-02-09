@@ -4,7 +4,7 @@
   </article>
 </template>
 <script setup lang="ts">
-import { init, EChartsOption, EChartsType } from "echarts"
+import { init, EChartsOption, EChartsType } from 'echarts'
 const chart = ref<null | HTMLElement>(null)
 const props = withDefaults(
   defineProps<{
@@ -17,12 +17,14 @@ const props = withDefaults(
 let mychart: EChartsType
 
 const createChart = () => {
+  console.log(props.option)
+
   if (!props.option) return
 
   if (!mychart) {
     mychart = init(chart.value as HTMLElement)
     mychart.setOption(props.option)
-    window.addEventListener("resize", () => {
+    window.addEventListener('resize', () => {
       mychart.resize()
     })
   } else {

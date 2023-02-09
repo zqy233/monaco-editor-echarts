@@ -1,8 +1,5 @@
 <template>
-  <el-button @click="showDrawer">打开遮罩</el-button>
-  <el-button @click="github">github登录</el-button>
-  <el-button @click="getToken">获取token</el-button>
-  <el-button @click="reqOptionsFile">获取gitst</el-button>
+  <!-- <el-button @click="showDrawer">页面设置</el-button> -->
   <section class="echarts-demo-list">
     <div v-for="(item, index) in reqDataArr" :key="index" class="echarts-demo">
       <el-tooltip class="box-item" effect="dark" :content="item.name">
@@ -12,7 +9,7 @@
         <chartPreviewImg :option="item.option" @click="routerPush(item.id)"></chartPreviewImg>
       </div>
     </div>
-    <el-drawer v-model="drawer" title="页面设置" direction="rtl">
+    <!-- <el-drawer v-model="drawer" title="页面设置" direction="rtl">
       <div class="themes-container">
         <h3 @click="setEchartsTheme()">切换echarts主题</h3>
         <div
@@ -36,40 +33,102 @@
           <div class="color" style="background: #e84393"></div>
         </div>
       </div>
-    </el-drawer>
+    </el-drawer> -->
   </section>
 </template>
 <script lang="ts" setup>
-import axios from "axios"
-import vm from "vm-browserify"
-import qs from "qs"
-let code = ""
-let token = ""
+import axios from 'axios'
+import vm from 'vm-browserify'
+import qs from 'qs'
+
 const router = useRouter()
+const routerPush = (id: string) => {
+  router.push({ path: '/echarts-code', query: { id } })
+}
+
+// 设置主题
+// const drawer = ref(false)
+// const showDrawer = () => {
+//   drawer.value = true
+// }
+// const echartsTheme = ref('light')
+// type echartThemeEnum = 'light' | 'dark'
+// const setEchartsTheme = (theme?: echartThemeEnum) => {
+//   ;(document.querySelector(':root') as HTMLElement).style.setProperty(
+//     '--main-color',
+//     echartsTheme.value === 'dark' ? '#f2f3f9' : '#262626'
+//   )
+//   if (theme) {
+//     echartsTheme.value = theme
+//   } else {
+//     echartsTheme.value = echartsTheme.value === 'light' ? 'dark' : 'light'
+//   }
+// }
+
+let token = ''
+let code = ''
+onMounted(() => {
+  code = qs.parse(window.location.search)['?code'] as string
+  if (code) {
+    getToken()
+  } else {
+    githubLogin()
+  }
+})
+/** 登录github，github会在路径上加上一个code */
+const githubLogin = () => {
+  location.href = 'https://github.com/login/oauth/authorize?client_id=07b3c567d304a6aa1b92'
+}
+/** 根据路径上的code请求github的token */
+const getToken = async () => {
+  try {
+    const res = await axios.post(
+      'https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token',
+      {
+        client_id: '07b3c567d304a6aa1b92',
+        client_secret: 'edad2b4773120369d20226976f0dcc20f3587328',
+        code,
+      },
+      { headers: { Accept: 'application/json' } }
+    )
+    // token获取成功
+    if (res && res.data && res.data.access_token) {
+      token = res.data.access_token
+      localStorage.setItem('token', token)
+      reqOptionsFile()
+    } else {
+      // token获取失败
+      console.log('err: ', res.data)
+      if (res.data.error === 'bad_verification_code') {
+        githubLogin()
+      }
+    }
+  } catch (err) {
+    console.log('err: ', err)
+  }
+}
+/** 获取github的gists */
 interface reqDataArrType {
   name: string
   option: any
   id: string
 }
 const reqDataArr = ref<reqDataArrType[]>([])
-
 const reqOptionsFile = async () => {
-  console.log(111, token)
-
   const { data: gisList } = await axios({
-    method: "get",
-    url: "https://api.github.com/users/zqy233/gists",
-    headers: { Authorization: "Bearer " + token },
+    method: 'get',
+    url: 'https://api.github.com/users/zqy233/gists',
+    headers: { Authorization: 'Bearer ' + token },
   })
   const gisListIds = gisList.map((item: any) => item.id)
   gisListIds.forEach(async (id: string) => {
     const { data: gist } = await axios({
-      method: "get",
+      method: 'get',
       url: `https://api.github.com/gists/${id}`,
-      headers: { Authorization: "Bearer " + token },
+      headers: { Authorization: 'Bearer ' + token },
     })
     // 我设计了一个获取gist内容的规则，description信息包含文件中文和文件名，用"-"分割
-    const gistDescription = gist.description.split("-")
+    const gistDescription = gist.description.split('-')
     reqDataArr.value.push({
       name: gistDescription[0],
       option: vm.runInNewContext(gist.files[gistDescription[1]].content),
@@ -77,56 +136,13 @@ const reqOptionsFile = async () => {
     })
   })
 }
-
-onMounted(() => {
-  // reqOptionsFile()
-})
-const drawer = ref(false)
-const showDrawer = () => {
-  drawer.value = true
-}
-const routerPush = (id: string) => {
-  router.push({ path: "/echarts-code", query: { id } })
-}
-
-const echartsTheme = ref("light")
-type echartThemeEnum = "light" | "dark"
-const setEchartsTheme = (theme?: echartThemeEnum) => {
-  ;(document.querySelector(":root") as HTMLElement).style.setProperty(
-    "--main-color",
-    echartsTheme.value === "dark" ? "#f2f3f9" : "#262626"
-  )
-  if (theme) {
-    echartsTheme.value = theme
-  } else {
-    echartsTheme.value = echartsTheme.value === "light" ? "dark" : "light"
-  }
-}
-
-const github = () => {
-  location.href = "https://github.com/login/oauth/authorize?client_id=07b3c567d304a6aa1b92"
-  console.log(window.location)
-}
-
-const getToken = async () => {
-  code = qs.parse(window.location.search)["?code"] as string
-  const { data: res } = await axios.post(
-    "https://github.com/login/oauth/access_token",
-    {
-      client_id: "07b3c567d304a6aa1b92",
-      client_secret: "edad2b4773120369d20226976f0dcc20f3587328",
-      code,
-    },
-    { headers: { Accept: "application/json" } }
-  )
-  console.log(res)
-  // token = res.access_token
-}
 </script>
 <style lang="scss">
 .echarts-demo-list {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
+  padding-bottom: 20px;
 }
 
 .echarts-demo-title {
@@ -221,7 +237,7 @@ const getToken = async () => {
       margin: 0 10px;
 
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         top: 5px;
         left: 5px;

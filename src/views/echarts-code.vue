@@ -9,15 +9,19 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { EChartsOption } from "echarts"
-import axios from "axios"
-import vm from "vm-browserify"
+import { EChartsOption } from 'echarts'
+import axios from 'axios'
+import vm from 'vm-browserify'
 const route = useRoute()
-const str = ref("")
+const str = ref('')
 const reqOptionsFile = async () => {
-  const { data: gist } = await axios.get(`https://api.github.com/gists/${route.query.id}`)
+  const { data: gist } = await axios({
+    method: 'get',
+    url: `https://api.github.com/gists/${route.query.id}`,
+    headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
+  })
   // 我设计了一个获取gist内容的规则，description信息包含文件中文和文件名，用"-"分割
-  const gistDescription = gist.description.split("-")
+  const gistDescription = gist.description.split('-')
   str.value = gist.files[gistDescription[1]].content
   run()
 }
