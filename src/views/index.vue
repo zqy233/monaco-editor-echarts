@@ -1,15 +1,29 @@
 <template>
-  <el-button @click="openGithub">github仓库地址</el-button>
-  <el-button
-    @click="
-      createIssues('折线图', '折线图', '这个问题用于存储所有折线图option')
-    "
-    >创建问题</el-button
-  >
-  <el-button @click="a">创建评论</el-button>
-  <el-button @click="test">测试vm</el-button>
-  <el-button @click="getFilteredIssuesNum">getFilteredIssuesNum</el-button>
-  {{ editableTabsValue }}
+  <el-dialog v-model="dialogFormVisible" title="新建echarts类别">
+    <el-form :model="form" :rules="rules" status-icon>
+      <el-form-item label="名称" :label-width="80" prop="label">
+        <el-input v-model="form.label" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="描述" :label-width="80">
+        <el-input v-model="form.description" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirm" :loading="loading">
+          确认
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-button-group class="btns">
+    <el-button @click="openGithub">github仓库地址</el-button>
+    <el-button @click="dialogFormVisible = true">新建echarts类别</el-button>
+    <el-button @click="dialogFormVisible = true">新建echarts option</el-button>
+  </el-button-group>
+  <!-- <el-button @click="test">测试vm</el-button> -->
+  <!-- <el-button @click="getFilteredIssuesNum">getFilteredIssuesNum</el-button> -->
   <el-tabs
     v-model="editableTabsValue"
     type="card"
@@ -117,18 +131,32 @@ interface issueOptionsType {
 const issues = ref([]);
 const issueOptions = ref<issueOptionsType[]>([]);
 
-onMounted(async () => {
-  await setToken();
-  issues.value = await getIssues("");
-  editableTabs.value = issues.value.map((item) => {
-    return {
-      title: `${item.title}（${item.comments}）`,
-      name: item.title,
-    };
-  });
-  editableTabs.value.unshift({ title: "全部", name: "" });
+/**
+ * 根据标签查询问题中options列表（实际上就是评论列表）
+ * @param label 标签
+ */
+const setIssueOptions = async (label) => {
+  issues.value = await getIssues(label);
+  if (!label) {
+    editableTabs.value = issues.value.map((item) => {
+      return {
+        title: `${item.title}（${item.comments}）`,
+        name: item.title,
+      };
+    });
+    editableTabs.value.unshift({ title: "全部", name: "" });
+  } else {
+    // 更新数量
+    editableTabs.value.find(
+      (item) => item.name === label
+    ).title = `${label}（${issues.value[0].comments}）`;
+  }
   const comments = await getAllIssuesComments(issues.value);
   issueOptions.value = comments.value;
+};
+onMounted(async () => {
+  await setToken();
+  setIssueOptions("");
 });
 // const a = () => {
 //   createComments(token, 8);
@@ -184,12 +212,31 @@ const handleTabsEdit = (
   }
 };
 const handleTabClick = async (pane) => {
-  issues.value = await getIssues(pane.props.name);
-  const comments = await getAllIssuesComments(issues.value);
-  issueOptions.value = comments.value;
+  setIssueOptions(pane.props.name);
+};
+
+const dialogFormVisible = ref(false);
+const form = ref({
+  label: "柱图",
+  description: "这个问题用于存储所有柱图option",
+});
+
+const rules = reactive({
+  label: [{ required: true, message: "名称不能为空", trigger: "blur" }],
+});
+
+const loading = ref(false);
+const confirm = async () => {
+  loading.value = true;
+  await createIssues(form.value.label, form.value.description);
+  dialogFormVisible.value = false;
+  loading.value = false;
 };
 </script>
 <style lang="scss">
+.btns {
+  margin-bottom: 10px;
+}
 .el-tabs--card > .el-tabs__header .el-tabs__item.is-active.is-closable {
   background-color: #fff;
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import vm from "vm-browserify";
 import qs from "qs";
-import { ElMessage } from "element-plus";
+import { ElNotification } from "element-plus";
 const owner = "zqy233";
 const repo = "monaco-editor-echarts";
 let code = "";
@@ -139,20 +139,26 @@ export async function getIssues(label: string) {
   }
 }
 
-export async function createIssues(name, type, description) {
+export async function createIssues(label, description) {
   const res = await axios({
     method: "post",
     url: `https://api.github.com/repos/${owner}/${repo}/issues`,
     headers: { Authorization: "Bearer " + token },
     data: {
-      title: name,
-      labels: ["echarts option", type],
+      title: label,
+      labels: ["echarts option", label],
       body: description,
     },
   });
   console.log(res);
-  // if (res.code === 201) {
-  // }
+  if (res.status === 201) {
+    ElNotification({
+      title: "Success",
+      message: "新建问题成功",
+      type: "success",
+      duration: 3000,
+    });
+  }
 }
 
 interface issueOptionsType {
