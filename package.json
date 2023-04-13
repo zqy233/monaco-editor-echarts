@@ -12,6 +12,7 @@
     "echarts": "5.4.2",
     "echarts-gl": "^2.0.9",
     "html2canvas": "^1.4.1",
+    "magic-string": "^0.30.0",
     "monaco-editor": "^0.37.1",
     "monaco-editor-auto-typings": "^0.4.3",
     "pinia": "2.0.34",
@@ -39,7 +40,6 @@
     "vite-plugin-monaco-editor-nls": "^2.0.2",
     "vite-plugin-pages": "^0.29.0",
     "vite-plugin-style-import": "^2.0.0",
-    "vscode-loc": "git+https://jihulab.com/james-curtis/vscode-loc",
     "vue-tsc": "^1.2.0"
   }
 }

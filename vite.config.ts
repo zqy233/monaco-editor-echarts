@@ -11,7 +11,7 @@ import MonacoEditorNlsPlugin, {
   esbuildPluginMonacoEditorNls,
   Languages,
 } from "./plugin";
-const zh_CN = require("vscode-loc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json");
+const zh_CN = require("./plugin/main.i18n.json");
 import Pages from "vite-plugin-pages";
 import AutoImport from "unplugin-auto-import/vite";
 import { createHtmlPlugin } from "vite-plugin-html";
@@ -81,10 +81,10 @@ export default ({ mode }) => {
       Components({
         dirs: ["src/components"], // 要导入组件的目录路径
         deep: true, // 搜索子目录
-        dts: "src/components/components.d.ts", // 生成 `components.d.ts` 全局声明
+        dts: "src/components.d.ts", // 生成 `components.d.ts` 全局声明
         // 配置vxe-table的自动注册组件
         resolvers: [
-          ElementPlusResolver(),
+          // ElementPlusResolver(),
           (componentName) => {
             if (componentName.startsWith("Vxe"))
               return { name: componentName.slice(3), from: "vxe-table" };
