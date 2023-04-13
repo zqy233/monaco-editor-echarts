@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogFormVisible" title="新建echarts类别">
+  <el-dialog v-model="dialogFormVisible" title="新建标签卡（新建echarts类别）">
     <el-form :model="form" :rules="rules" status-icon>
       <el-form-item label="名称" :label-width="80" prop="label">
         <el-input v-model="form.label" autocomplete="off" />
@@ -19,19 +19,18 @@
   </el-dialog>
   <el-button-group class="btns">
     <el-button @click="openGithub">github仓库地址</el-button>
-    <el-button @click="dialogFormVisible = true">新建echarts类别</el-button>
     <el-button @click="routerPush(demoStr)">新建echarts option</el-button>
   </el-button-group>
   <el-tabs
     v-model="editableTabsValue"
     type="card"
     editable
-    class="demo-tabs"
+    tab-position="bottom"
     @edit="handleTabsEdit"
     @tab-click="handleTabClick"
   >
     <el-tab-pane
-      v-for="item in editableTabs"
+      v-for="(item, index) in editableTabs"
       :key="item.title"
       :label="item.title"
       :name="item.name"
@@ -102,8 +101,6 @@ let scrollTop = 0;
 const routerPush = (optionStr: string) => {
   store.setOption(optionStr);
   scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-  console.log(111, scrollTop);
-
   router.push({ path: "/echarts-code" });
 };
 
@@ -175,45 +172,17 @@ onMounted(async () => {
 //   });
 // };
 
-const test = () => {
-  console.log(runInNewContext(`const b = 10; i =b+ 1`));
-};
-let tabIndex = 2;
 const editableTabsValue = ref("");
-const editableTabs = ref([
-  {
-    title: "",
-    name: "",
-  },
-]);
+const editableTabs = ref([]);
 
 const handleTabsEdit = (
   targetName: TabPaneName | undefined,
   action: "remove" | "add"
 ) => {
   if (action === "add") {
-    const newTabName = `${++tabIndex}`;
-    editableTabs.value.push({
-      title: "New Tab",
-      name: "1",
-    });
-    editableTabsValue.value = newTabName;
+    dialogFormVisible.value = true;
   }
   if (action === "remove") {
-    // const tabs = editableTabs.value;
-    // let activeName = editableTabsValue.value;
-    // if (activeName === targetName) {
-    //   tabs.forEach((tab, index) => {
-    //     if (tab.name === targetName) {
-    //       const nextTab = tabs[index + 1] || tabs[index - 1];
-    //       if (nextTab) {
-    //         activeName = nextTab.name;
-    //       }
-    //     }
-    //   });
-    // }
-    // editableTabsValue.value = activeName;
-    // editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
   }
 };
 const handleTabClick = async (pane) => {

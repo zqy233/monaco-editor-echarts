@@ -99,7 +99,6 @@ const editContainer = ref<null | HTMLElement>(null);
 watch(
   () => store.option,
   (value) => {
-    console.log("加载编辑器");
     if (monacoEditor) {
       // 防止改变编辑器内容时光标重定向
       if (value !== monacoEditor.getValue()) {

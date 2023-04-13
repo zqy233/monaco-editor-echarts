@@ -12,8 +12,6 @@ watch(
   () => store.option,
   () => {
     nextTick(() => {
-      console.log(vchart.value);
-      // vchart.value.clear();
       option.value = vm.runInNewContext(store.option);
     });
   },
