@@ -1,1 +1,0 @@
-import{x as r}from"./index-c18eebb5.js";const p=(t,s)=>{const o=t.__vccOpts||t;for(const[e,n]of s)o[e]=n;return o},a=r("option",{state:()=>({option:""}),actions:{setOption(t){this.option=t}}});export{p as _,a as u};
