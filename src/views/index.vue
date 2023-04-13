@@ -20,10 +20,8 @@
   <el-button-group class="btns">
     <el-button @click="openGithub">github仓库地址</el-button>
     <el-button @click="dialogFormVisible = true">新建echarts类别</el-button>
-    <el-button @click="dialogFormVisible = true">新建echarts option</el-button>
+    <el-button @click="routerPush(demoStr)">新建echarts option</el-button>
   </el-button-group>
-  <!-- <el-button @click="test">测试vm</el-button> -->
-  <!-- <el-button @click="getFilteredIssuesNum">getFilteredIssuesNum</el-button> -->
   <el-tabs
     v-model="editableTabsValue"
     type="card"
@@ -99,8 +97,13 @@ import {
 
 const store = useOptionStore();
 const router = useRouter();
+let scrollTop = 0;
+
 const routerPush = (optionStr: string) => {
   store.setOption(optionStr);
+  scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+  console.log(111, scrollTop);
+
   router.push({ path: "/echarts-code" });
 };
 
@@ -156,7 +159,9 @@ const setIssueOptions = async (label) => {
 };
 onMounted(async () => {
   await setToken();
-  setIssueOptions("");
+  if (!issueOptions.value.length) {
+    setIssueOptions("");
+  }
 });
 // const a = () => {
 //   createComments(token, 8);
@@ -232,6 +237,29 @@ const confirm = async () => {
   dialogFormVisible.value = false;
   loading.value = false;
 };
+
+const demoStr = `option = {
+  xAxis: {
+    type: 'category',
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      data: [150, 230, 224, 218, 135, 147, 260],
+      type: 'line'
+    }
+  ]
+};`;
+
+onActivated(() => {
+  nextTick(() => {
+    document.body.scrollTop = scrollTop;
+    document.documentElement.scrollTop = scrollTop;
+  });
+});
 </script>
 <style lang="scss">
 .btns {

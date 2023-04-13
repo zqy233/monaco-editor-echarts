@@ -1,28 +1,14 @@
 <template>
   <div class="editor">
     <div class="left">
-      <leftEditor :modelValue="store.option" @run="run"></leftEditor>
+      <leftEditor></leftEditor>
     </div>
     <div class="right">
-      <rightChart :option="options"></rightChart>
+      <rightChart></rightChart>
     </div>
   </div>
 </template>
-<script lang="ts" setup>
-import { EChartsOption } from "echarts";
-import vm from "vm-browserify";
-const store = useOptionStore();
-const options = ref<EChartsOption>();
-const run = () => {
-  options.value = vm.runInNewContext(store.option);
-};
-onMounted(() => {
-  run();
-});
-onActivated(() => {
-  run();
-});
-</script>
+<script lang="ts" setup></script>
 <style lang="scss" scoped>
 .editor {
   display: flex;
