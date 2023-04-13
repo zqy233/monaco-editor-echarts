@@ -4,40 +4,46 @@
   </article>
 </template>
 <script setup lang="ts">
-import { init, EChartsOption, EChartsType } from 'echarts'
-const chart = ref<null | HTMLElement>(null)
+import { init, EChartsOption, EChartsType } from "echarts";
+const chart = ref<null | HTMLElement>(null);
 const props = withDefaults(
   defineProps<{
-    option: EChartsOption | undefined
+    option: EChartsOption | undefined;
   }>(),
   {
     option: undefined,
   }
-)
-let mychart: EChartsType
-
+);
+let mychart: EChartsType;
+const resize = () => {
+  console.log(1111, props.option);
+  mychart.resize();
+  mychart.setOption(props.option);
+  setTimeout(() => {
+    mychart.resize();
+    mychart.setOption(props.option);
+  }, 500);
+};
 const createChart = () => {
-  console.log(props.option)
-
-  if (!props.option) return
-
+  if (!props.option) return;
   if (!mychart) {
-    mychart = init(chart.value as HTMLElement)
-    mychart.setOption(props.option)
-    window.addEventListener('resize', () => {
-      mychart.resize()
-    })
+    mychart = init(chart.value as HTMLElement);
   } else {
-    mychart.clear() // fix：上一次数据遗留的问题
-    mychart.setOption(props.option)
+    window.removeEventListener("resize", resize);
+    mychart.clear(); // fix：上一次数据遗留的问题
   }
-}
+  mychart.setOption(props.option);
+  window.addEventListener("resize", resize);
+};
 watch(
   () => props.option,
   () => {
-    createChart()
+    createChart();
+  },
+  {
+    deep: true,
   }
-)
+);
 </script>
 <style>
 .rightChart {

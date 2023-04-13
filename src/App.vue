@@ -8,12 +8,12 @@
 
 <script lang="ts">
 // 自定义name的壳的集合
-const wrapperMap = new Map()
+const wrapperMap = new Map();
 export default {
   data() {
     return {
       include: [],
-    }
+    };
   },
   watch: {
     $route: {
@@ -31,28 +31,28 @@ export default {
   methods: {
     // 为keep-alive里的component接收的组件包上一层自定义name的壳
     wrap(fullPath: string, component: string) {
-      let wrapper
+      let wrapper;
       // 重点就是这里，这个组件的名字是完全可控的，
       // 只要自己写好逻辑，每次能找到对应的外壳组件就行，完全可以写成任何自己想要的名字
       // 这就能配合 keep-alive 的 include 属性可控地操作缓存
       if (component) {
-        const wrapperName = fullPath
+        const wrapperName = fullPath;
         if (wrapperMap.has(wrapperName)) {
-          wrapper = wrapperMap.get(wrapperName)
+          wrapper = wrapperMap.get(wrapperName);
         } else {
           wrapper = {
             name: wrapperName,
             render() {
-              return h('div', { className: 'vaf-page-wrapper' }, component)
+              return h("div", { className: "vaf-page-wrapper" }, component);
             },
-          }
-          wrapperMap.set(wrapperName, wrapper)
+          };
+          wrapperMap.set(wrapperName, wrapper);
         }
-        return h(wrapper)
+        return h(wrapper);
       }
     },
   },
-}
+};
 </script>
 
 <style>

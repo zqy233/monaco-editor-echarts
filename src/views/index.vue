@@ -1,12 +1,44 @@
 <template>
+  <el-button @click="openGithub">github仓库地址</el-button>
+  <el-button
+    @click="
+      createIssues('折线图', '折线图', '这个问题用于存储所有折线图option')
+    "
+    >创建问题</el-button
+  >
+  <el-button @click="a">创建评论</el-button>
+  <el-button @click="test">测试vm</el-button>
+  <el-button @click="getFilteredIssuesNum">getFilteredIssuesNum</el-button>
+  <el-tabs
+    v-model="editableTabsValue"
+    type="card"
+    editable
+    class="demo-tabs"
+    @edit="handleTabsEdit"
+  >
+    <el-tab-pane
+      v-for="item in editableTabs"
+      :key="item.name"
+      :label="item.title"
+      :name="item.name"
+    >
+    </el-tab-pane>
+  </el-tabs>
   <!-- <el-button @click="showDrawer">页面设置</el-button> -->
   <section class="echarts-demo-list">
-    <div v-for="(item, index) in reqDataArr" :key="index" class="echarts-demo">
-      <el-tooltip class="box-item" effect="dark" :content="item.name">
-        <p class="echarts-demo-title">{{ item.name }}</p>
+    <div
+      v-for="(item, index) in issueOptions"
+      :key="index"
+      class="echarts-demo"
+    >
+      <el-tooltip class="box-item" effect="dark" :content="item.title">
+        <p class="echarts-demo-title">{{ item.title }}</p>
       </el-tooltip>
       <div class="echarts-demo-item">
-        <chartPreviewImg :option="item.option" @click="routerPush(item.id)"></chartPreviewImg>
+        <chartPreviewImg
+          :option="item.option"
+          @click="routerPush(item.optionStr)"
+        ></chartPreviewImg>
       </div>
     </div>
     <!-- <el-drawer v-model="drawer" title="页面设置" direction="rtl">
@@ -37,15 +69,26 @@
   </section>
 </template>
 <script lang="ts" setup>
-import axios from 'axios'
-import vm from 'vm-browserify'
-import qs from 'qs'
+import type { TabPaneName } from "element-plus";
+import { EChartsOption } from "echarts";
+import {
+  setToken,
+  getFilteredIssuesNum,
+  getAllIssuesComments,
+  openGithub,
+  getIssues,
+  createIssues,
+  runInNewContext,
+} from "./githubApi";
 
-const router = useRouter()
-const routerPush = (id: string) => {
-  router.push({ path: '/echarts-code', query: { id } })
-}
+const store = useOptionStore();
+const router = useRouter();
+const routerPush = (optionStr: string) => {
+  store.setOption(optionStr);
+  router.push({ path: "/echarts-code" });
+};
 
+// const reqDataArr = ref([]);
 // 设置主题
 // const drawer = ref(false)
 // const showDrawer = () => {
@@ -64,78 +107,80 @@ const routerPush = (id: string) => {
 //     echartsTheme.value = echartsTheme.value === 'light' ? 'dark' : 'light'
 //   }
 // }
+interface issueOptionsType {
+  title: string;
+  optionStr: string;
+  option: any;
+}
+const issues = ref([]);
+const issueOptions = ref<issueOptionsType[]>([]);
 
-let token = ''
-let code = ''
-onMounted(() => {
-  code = qs.parse(window.location.search)['?code'] as string
-  if (code) {
-    getToken()
-  } else {
-    githubLogin()
-  }
-})
-/** 登录github，github会在路径上加上一个code */
-const githubLogin = () => {
-  location.href = 'https://github.com/login/oauth/authorize?client_id=07b3c567d304a6aa1b92'
-}
-/** 根据路径上的code请求github的token */
-const getToken = async () => {
-  try {
-    const res = await axios.post(
-      'https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token',
-      {
-        client_id: '07b3c567d304a6aa1b92',
-        client_secret: 'edad2b4773120369d20226976f0dcc20f3587328',
-        code,
-      },
-      { headers: { Accept: 'application/json' } }
-    )
-    // token获取成功
-    if (res && res.data && res.data.access_token) {
-      token = res.data.access_token
-      localStorage.setItem('token', token)
-      reqOptionsFile()
-    } else {
-      // token获取失败
-      console.log('err: ', res.data)
-      if (res.data.error === 'bad_verification_code') {
-        githubLogin()
-      }
+onMounted(async () => {
+  await setToken();
+  issues.value = await getIssues();
+  const comments = await getAllIssuesComments(issues.value);
+  issueOptions.value = comments.value;
+});
+// const a = () => {
+//   createComments(token, 8);
+// };
+
+// const getUser = async () => {
+//   const { data: res } = await axios({
+//     method: "get",
+//     url: `https://api.github.com/user`,
+//     headers: { Authorization: "Bearer " + token },
+//   });
+// };
+
+const test = () => {
+  console.log(runInNewContext(`const b = 10; i =b+ 1`));
+};
+let tabIndex = 2;
+const editableTabsValue = ref("2");
+const editableTabs = ref([
+  {
+    title: "Tab 1",
+    name: "1",
+    content: "Tab 1 content",
+  },
+  {
+    title: "Tab 2",
+    name: "2",
+    content: "Tab 2 content",
+  },
+]);
+
+const handleTabsEdit = (
+  targetName: TabPaneName | undefined,
+  action: "remove" | "add"
+) => {
+  if (action === "add") {
+    const newTabName = `${++tabIndex}`;
+    editableTabs.value.push({
+      title: "New Tab",
+      name: newTabName,
+      content: "New Tab content",
+    });
+    editableTabsValue.value = newTabName;
+  } else if (action === "remove") {
+    const tabs = editableTabs.value;
+    let activeName = editableTabsValue.value;
+    if (activeName === targetName) {
+      tabs.forEach((tab, index) => {
+        if (tab.name === targetName) {
+          const nextTab = tabs[index + 1] || tabs[index - 1];
+          if (nextTab) {
+            activeName = nextTab.name;
+          }
+        }
+      });
     }
-  } catch (err) {
-    console.log('err: ', err)
+
+    editableTabsValue.value = activeName;
+    editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
   }
-}
-/** 获取github的gists */
-interface reqDataArrType {
-  name: string
-  option: any
-  id: string
-}
-const reqDataArr = ref<reqDataArrType[]>([])
-const reqOptionsFile = async () => {
-  const { data: gisList } = await axios({
-    method: 'get',
-    url: 'https://api.github.com/users/zqy233/gists',
-    headers: { Authorization: 'Bearer ' + token },
-  })
-  const gisListIds = gisList.map((item: any) => item.id)
-  gisListIds.forEach(async (id: string) => {
-    const { data: gist } = await axios({
-      method: 'get',
-      url: `https://api.github.com/gists/${id}`,
-      headers: { Authorization: 'Bearer ' + token },
-    })
-    // 我设计了一个获取gist内容的规则，description信息包含文件中文和文件名，用"-"分割
-    const gistDescription = gist.description.split('-')
-    reqDataArr.value.push({
-      name: gistDescription[0],
-      option: vm.runInNewContext(gist.files[gistDescription[1]].content),
-      id,
-    })
-  })
-}
+};
 </script>
 <style lang="scss">
 .echarts-demo-list {
@@ -160,6 +205,7 @@ const reqOptionsFile = async () => {
 .echarts-demo {
   width: calc(20vw - 20px);
   height: calc(20vw - 20px);
+  margin-bottom: 30px;
 }
 
 .echarts-demo-item {
@@ -168,7 +214,8 @@ const reqOptionsFile = async () => {
   margin: 0 auto;
   width: calc(100% - 20px);
   height: calc(100% - 40px);
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 }
 
 @media (max-width: 1200px) {
@@ -237,7 +284,7 @@ const reqOptionsFile = async () => {
       margin: 0 10px;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 5px;
         left: 5px;

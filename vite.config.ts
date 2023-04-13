@@ -1,18 +1,24 @@
-import { defineConfig } from "vite"
-import vue from "@vitejs/plugin-vue"
-import Components from "unplugin-vue-components/vite"
-import { createStyleImportPlugin, VxeTableResolve } from "vite-plugin-style-import"
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
-import { resolve } from "path"
-import MonacoEditorNlsPlugin, { esbuildPluginMonacoEditorNls, Languages } from "./plugin"
-const zh_CN = require("vscode-loc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json")
-import Pages from "vite-plugin-pages"
-import AutoImport from "unplugin-auto-import/vite"
-import { createHtmlPlugin } from "vite-plugin-html"
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import Components from "unplugin-vue-components/vite";
+import {
+  createStyleImportPlugin,
+  VxeTableResolve,
+} from "vite-plugin-style-import";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import { resolve } from "path";
+import MonacoEditorNlsPlugin, {
+  esbuildPluginMonacoEditorNls,
+  Languages,
+} from "./plugin";
+const zh_CN = require("vscode-loc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json");
+import Pages from "vite-plugin-pages";
+import AutoImport from "unplugin-auto-import/vite";
+import { createHtmlPlugin } from "vite-plugin-html";
 
 export default ({ mode }) => {
   return defineConfig({
-    base: mode === "development" ? "./" : "/monaco-editor-echarts/",
+    base: "/monaco-editor-echarts/",
     build: {
       outDir: "docs",
     },
@@ -51,9 +57,11 @@ export default ({ mode }) => {
           },
         },
       }),
+      // 自动导入api
       AutoImport({
-        imports: ["vue", "vue-router", "vuex"], // 自动导入composition api
-        dts: "src/auto-import.d.ts", // 生成 `auto-import.d.ts` 全局声明
+        imports: ["vue", "vue-router"],
+        dirs: ["src/store"],
+        dts: "src/auto-import.d.ts",
       }),
       Pages({
         // 自动读取src/views下的vue文件，生成路由信息，默认路由路径'/‘
@@ -77,9 +85,9 @@ export default ({ mode }) => {
         // 配置vxe-table的自动注册组件
         resolvers: [
           ElementPlusResolver(),
-          componentName => {
+          (componentName) => {
             if (componentName.startsWith("Vxe"))
-              return { name: componentName.slice(3), from: "vxe-table" }
+              return { name: componentName.slice(3), from: "vxe-table" };
           },
         ],
       }),
@@ -96,5 +104,5 @@ export default ({ mode }) => {
       port: 9005, // 端口号
       open: true, // 是否自动打开浏览器
     },
-  })
-}
+  });
+};
