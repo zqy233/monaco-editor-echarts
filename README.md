@@ -5,7 +5,7 @@
 
 因为工作中开发过很多 echarts 图表，这些图表的 option 配置不记起来很容易下次就忘了
 
-想开发个网站存放这些 option 配置，目前基于 github gist 来存放 echarts option
+想开发个网站存放这些 option 配置，目前基于 github issues 存储 echasrt 图表 option 配置
 
 因为未登录 github 情况下，请求 api 很快就会限制，所以干脆设置一访问就进行登陆
 
@@ -13,7 +13,7 @@
 
 地图支持
 
-后续打算使用 github issues 来创建、获取 option，gist 不是很好用
+个性化设置
 
 ## 网站预览
 
