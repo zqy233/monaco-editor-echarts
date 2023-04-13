@@ -1,7 +1,7 @@
 import axios from "axios";
 import vm from "vm-browserify";
 import qs from "qs";
-
+import { ElMessage } from "element-plus";
 const owner = "zqy233";
 const repo = "monaco-editor-echarts";
 let code = "";
@@ -99,19 +99,17 @@ export async function getFilteredIssuesNum(): Promise<number> {
   }
 }
 
-export async function getIssues() {
-  // const per_page = 100;
-  const res = await axios({
-    method: "get",
-    url: `https://api.github.com/repos/${owner}/${repo}/issues`,
-    headers: { Authorization: "Bearer " + token },
-    params: {
-      labels: "echarts option",
-      // per_page,
-    },
-  });
-  if (res.status === 200) {
-    const linkHeader = res.headers.link;
+export async function getIssues(label: string) {
+  try {
+    const res = await axios({
+      method: "get",
+      url: `https://api.github.com/repos/${owner}/${repo}/issues`,
+      headers: { Authorization: "Bearer " + token },
+      params: {
+        labels: ["echarts option", label].join(","),
+      },
+    });
+    const linkHeader = res.headers?.link;
     // linkHeader是这样的格式：
     // "<https://api.github.com/repositories/513548497/issues?labels=echarts+option&per_page=1&page=2>; rel="next", <https://api.github.com/repositories/513548497/issues?labels=echarts+option&per_page=1&page=3>; rel="last""
 
@@ -134,8 +132,11 @@ export async function getIssues() {
     } else {
       console.log(`Link header not found in the response`);
     }
+    return res.data;
+  } catch (err) {
+    console.log("err: ", err);
+    return [];
   }
-  return res.data;
 }
 
 export async function createIssues(name, type, description) {

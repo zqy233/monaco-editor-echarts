@@ -9,16 +9,18 @@
   <el-button @click="a">创建评论</el-button>
   <el-button @click="test">测试vm</el-button>
   <el-button @click="getFilteredIssuesNum">getFilteredIssuesNum</el-button>
+  {{ editableTabsValue }}
   <el-tabs
     v-model="editableTabsValue"
     type="card"
     editable
     class="demo-tabs"
     @edit="handleTabsEdit"
+    @tab-click="handleTabClick"
   >
     <el-tab-pane
       v-for="item in editableTabs"
-      :key="item.name"
+      :key="item.title"
       :label="item.title"
       :name="item.name"
     >
@@ -117,7 +119,14 @@ const issueOptions = ref<issueOptionsType[]>([]);
 
 onMounted(async () => {
   await setToken();
-  issues.value = await getIssues();
+  issues.value = await getIssues("");
+  editableTabs.value = issues.value.map((item) => {
+    return {
+      title: `${item.title}（${item.comments}）`,
+      name: item.title,
+    };
+  });
+  editableTabs.value.unshift({ title: "全部", name: "" });
   const comments = await getAllIssuesComments(issues.value);
   issueOptions.value = comments.value;
 });
@@ -137,17 +146,11 @@ const test = () => {
   console.log(runInNewContext(`const b = 10; i =b+ 1`));
 };
 let tabIndex = 2;
-const editableTabsValue = ref("2");
+const editableTabsValue = ref("");
 const editableTabs = ref([
   {
-    title: "Tab 1",
-    name: "1",
-    content: "Tab 1 content",
-  },
-  {
-    title: "Tab 2",
-    name: "2",
-    content: "Tab 2 content",
+    title: "",
+    name: "",
   },
 ]);
 
@@ -159,30 +162,37 @@ const handleTabsEdit = (
     const newTabName = `${++tabIndex}`;
     editableTabs.value.push({
       title: "New Tab",
-      name: newTabName,
-      content: "New Tab content",
+      name: "1",
     });
     editableTabsValue.value = newTabName;
-  } else if (action === "remove") {
-    const tabs = editableTabs.value;
-    let activeName = editableTabsValue.value;
-    if (activeName === targetName) {
-      tabs.forEach((tab, index) => {
-        if (tab.name === targetName) {
-          const nextTab = tabs[index + 1] || tabs[index - 1];
-          if (nextTab) {
-            activeName = nextTab.name;
-          }
-        }
-      });
-    }
-
-    editableTabsValue.value = activeName;
-    editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
   }
+  if (action === "remove") {
+    // const tabs = editableTabs.value;
+    // let activeName = editableTabsValue.value;
+    // if (activeName === targetName) {
+    //   tabs.forEach((tab, index) => {
+    //     if (tab.name === targetName) {
+    //       const nextTab = tabs[index + 1] || tabs[index - 1];
+    //       if (nextTab) {
+    //         activeName = nextTab.name;
+    //       }
+    //     }
+    //   });
+    // }
+    // editableTabsValue.value = activeName;
+    // editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
+  }
+};
+const handleTabClick = async (pane) => {
+  issues.value = await getIssues(pane.props.name);
+  const comments = await getAllIssuesComments(issues.value);
+  issueOptions.value = comments.value;
 };
 </script>
 <style lang="scss">
+.el-tabs--card > .el-tabs__header .el-tabs__item.is-active.is-closable {
+  background-color: #fff;
+}
 .echarts-demo-list {
   display: flex;
   justify-content: center;
