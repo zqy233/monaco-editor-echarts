@@ -14,12 +14,12 @@ export function getCode() {
 }
 
 /** 设置token */
-export function setToken() {
+export async function setToken() {
   code = qs.parse(window.location.search)["?code"] as string;
   token = localStorage.getItem("token");
   if (code) {
     if (!token) {
-      getToken(code);
+      await getToken(code);
     }
   } else {
     getCode();

@@ -5,7 +5,6 @@ import {
   createStyleImportPlugin,
   VxeTableResolve,
 } from "vite-plugin-style-import";
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import { resolve } from "path";
 import MonacoEditorNlsPlugin, {
   esbuildPluginMonacoEditorNls,
