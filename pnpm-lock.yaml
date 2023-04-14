@@ -10,6 +10,9 @@ dependencies:
   echarts-gl:
     specifier: ^2.0.9
     version: 2.0.9(echarts@5.4.2)
+  echarts-liquidfill:
+    specifier: ^3.1.0
+    version: 3.1.0(echarts@5.4.2)
   html2canvas:
     specifier: ^1.4.1
     version: 1.4.1
@@ -1148,6 +1151,14 @@ packages:
       claygl: 1.3.0
       echarts: 5.4.2
       zrender: 5.4.3
+    dev: false
+
+  /echarts-liquidfill@3.1.0(echarts@5.4.2):
+    resolution: {integrity: sha512-5Dlqs/jTsdTUAsd+K5LPLLTgrbbNORUSBQyk8PSy1Mg2zgHDWm83FmvA4s0ooNepCJojFYRITTQ4GU1UUSKYLw==}
+    peerDependencies:
+      echarts: ^5.0.1
+    dependencies:
+      echarts: 5.4.2
     dev: false
 
   /echarts@5.4.2:

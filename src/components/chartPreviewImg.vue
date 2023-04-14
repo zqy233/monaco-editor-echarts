@@ -5,16 +5,21 @@
         <el-skeleton-item variant="image" class="w100h100" />
       </template>
       <template #default>
-        <img :src="img" class="previewImg" />
+        <img :src="img" class="previewImg" v-if="img" />
       </template>
     </el-skeleton>
-    <div class="chartPreviewImgDom" ref="chart" v-if="!img"></div>
+    <v-chart
+      class="chartPreviewImgDom"
+      :option="option"
+      ref="vchart"
+      @finished="finished"
+      v-if="!img"
+    />
   </div>
 </template>
 <script setup lang="ts">
-import { init, EChartsOption, EChartsType } from "echarts";
-// import html2canvas from "html2canvas"
-const chart = ref<null | HTMLElement>(null);
+import type { EChartsOption, EChartsType } from "echarts";
+const vchart = ref<null | EChartsType>(null);
 const img = ref("");
 const props = withDefaults(
   defineProps<{
@@ -22,48 +27,38 @@ const props = withDefaults(
   }>(),
   {}
 );
-let mychart: EChartsType;
+
 const loading = ref(true);
 
-const resize = () => {
-  mychart.resize();
-};
-const createChart = () => {
-  if (!props.option) return;
-
-  if (!mychart) {
-    mychart = init(chart.value as HTMLElement);
-    mychart.setOption(props.option);
-    // 等待echarts渲染完生成图片，用于预览
-    mychart.on("finished", () => {
-      // 值得注意的是，resize、鼠标悬浮等事件都会触发finished事件
-      // 所以需要判断，使图片仅生成一次
-      if (!img.value) {
-        img.value = mychart.getConnectedDataURL({ type: "png" });
-        nextTick(() => {
-          loading.value = false;
-        });
-        // echarts有自带的导出base64，暂不使用html2canvas
-        // html2canvas(chart.value as HTMLElement).then(function (canvas) {
-        //   img.value = canvas.toDataURL()
-        // })
-      }
+// 动画结束才会会触发finished事件
+const finished = () => {
+  // resize、鼠标悬浮等事件都会触发finished事件
+  // 所以需要判断，使图片仅生成一次
+  if (!img.value) {
+    img.value = vchart.value.getConnectedDataURL({ type: "png" });
+    nextTick(() => {
+      loading.value = false;
     });
-  } else {
-    window.removeEventListener("resize", resize);
-    mychart.clear(); // fix：上一次数据遗留的问题
-    mychart.setOption(props.option);
   }
-  window.addEventListener("resize", resize);
 };
+
 watch(
   () => props.option,
   () => {
-    nextTick(() => {
-      createChart();
-    });
+    if (props.option?.series)
+      if (Array.isArray(props.option?.series)) {
+        props.option?.series.forEach((item: any) => {
+          // fix: 修复动画不结束导致finished事件不出发的问题
+          if (item.type === "liquidFill") {
+            item.waveAnimation = false;
+          }
+        });
+      }
   },
-  { immediate: true }
+  {
+    immediate: true,
+    deep: true,
+  }
 );
 </script>
 <style lang="scss" scoped>

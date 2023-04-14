@@ -6,13 +6,8 @@ const owner = "zqy233";
 const repo = "monaco-editor-echarts";
 let code = "";
 let token = "";
-// 生产使用的client_id与client_secret
-// const client_id = "07b3c567d304a6aa1b92";
-// const client_secret = "edad2b4773120369d20226976f0dcc20f3587328"
-// 开发使用的client_id与client_secret
-const client_id = "ced0ff25b9a5a07e09a3";
-const client_secret = "1ac11b206aa65c9157989a77d34d23d1569a7c70";
-
+const { client_id } = window;
+const { client_secret } = window;
 /** 跳转授权页面，授权后跳转OAuth App设置的路径，并且路径上会添加授权code */
 export function getCode() {
   window.location.href = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo`;
